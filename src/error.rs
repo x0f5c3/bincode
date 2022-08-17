@@ -197,12 +197,14 @@ pub enum OutOfMemory {
     Alloc(AllocError),
 }
 
+#[cfg(feature = "alloc")]
 impl From<TryReserveError> for DecodeError {
     fn from(e: TryReserveError) -> Self {
         Self::OutOfMemory(OutOfMemory::TryReserve(e))
     }
 }
 
+#[cfg(feature = "alloc")]
 impl From<TryReserveError> for EncodeError {
     fn from(e: TryReserveError) -> Self {
         Self::OutOfMemory(OutOfMemory::TryReserve(e))
@@ -218,13 +220,6 @@ impl From<AllocError> for DecodeError {
 
 #[cfg(all(feature = "alloc", feature = "unstable-strict-oom-checks"))]
 impl From<AllocError> for EncodeError {
-    fn from(e: AllocError) -> Self {
-        Self::OutOfMemory(OutOfMemory::Alloc(e))
-    }
-}
-
-#[cfg(all(feature = "alloc", feature = "unstable-strict-oom-checks"))]
-impl From<AllocError> for DecodeError {
     fn from(e: AllocError) -> Self {
         Self::OutOfMemory(OutOfMemory::Alloc(e))
     }

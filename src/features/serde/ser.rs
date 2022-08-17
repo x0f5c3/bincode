@@ -224,7 +224,7 @@ where
     }
 
     fn serialize_seq(mut self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
-        let len = len.ok_or_else(|| SerdeEncodeError::SequenceMustHaveLength.into())?;
+        let len = len.ok_or(EncodeError::Serde(SerdeEncodeError::SequenceMustHaveLength))?;
         len.encode(&mut self.enc)?;
         Ok(Compound { enc: self.enc })
     }
@@ -253,7 +253,7 @@ where
     }
 
     fn serialize_map(mut self, len: Option<usize>) -> Result<Self::SerializeMap, Self::Error> {
-        let len = len.ok_or_else(|| SerdeEncodeError::SequenceMustHaveLength.into())?;
+        let len = len.ok_or(EncodeError::Serde(SerdeEncodeError::SequenceMustHaveLength))?;
         len.encode(&mut self.enc)?;
         Ok(Compound { enc: self.enc })
     }
