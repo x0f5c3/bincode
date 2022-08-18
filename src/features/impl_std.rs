@@ -48,12 +48,12 @@ where
 {
     #[inline(always)]
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
-        match self.reader.read_exact(bytes) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(DecodeError::UnexpectedEnd {
+        self.reader
+            .read_exact(bytes)
+            .map_err(|inner| DecodeError::Io {
+                inner,
                 additional: bytes.len(),
-            }),
-        }
+            })
     }
 }
 
@@ -62,16 +62,14 @@ where
     R: std::io::Read,
 {
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
-        match self.read_exact(bytes) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(DecodeError::UnexpectedEnd {
-                additional: bytes.len(),
-            }),
-        }
+        self.read_exact(bytes).map_err(|inner| DecodeError::Io {
+            inner,
+            additional: bytes.len(),
+        })
     }
 
     #[inline]
-    fn peek_read(&self, n: usize) -> Option<&[u8]> {
+    fn peek_read(&mut self, n: usize) -> Option<&[u8]> {
         self.buffer().get(..n)
     }
 
@@ -83,6 +81,7 @@ where
 
 /// Encode the given value into any type that implements `std::io::Write`, e.g. `std::fs::File`, with the given `Config`.
 /// See the [config] module for more information.
+/// Returns the amount of bytes written.
 ///
 /// [config]: config/index.html
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
