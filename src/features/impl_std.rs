@@ -458,7 +458,6 @@ where
 
         let mut map = HashMap::with_hasher(S::default());
         map.try_reserve(len)?;
-
         for _ in 0..len {
             // See the documentation on `unclaim_bytes_read` as to why we're doing this here
             decoder.unclaim_bytes_read(core::mem::size_of::<(K, V)>());
