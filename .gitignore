@@ -3,6 +3,7 @@
 *.swp
 *.swo
 .cargo
+.idea
 .vscode
 rls*.log
 tarpaulin-report.html
